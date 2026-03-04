@@ -1,4 +1,5 @@
 require("dotenv").config();
+const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const { getConfig, watchConfig } = require("./config/config");
@@ -21,6 +22,12 @@ app.get("/api/health", (req, res) => {
 app.use("/api/game", gameRoutes);
 app.use("/api/audio", audioRoutes);
 app.use("/api/library", libraryRoutes);
+
+const staticPath = path.join(__dirname, "..", "..", "frontend", "dist");
+app.use("/heardle", express.static(staticPath));
+app.get("/heardle/*", (_req, res) => {
+  res.sendFile(path.join(staticPath, "index.html"));
+});
 
 app.use(errorHandler);
 

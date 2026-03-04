@@ -1,12 +1,6 @@
 services:
-  backend:
-    build: ./backend
-    restart: unless-stopped
-
-  frontend:
-    build: ./frontend
+  heardle:
+    build: .
     ports:
-      - "80:80"
-    depends_on:
-      - backend
+      - "80:3000"
     restart: unless-stopped
