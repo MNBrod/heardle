@@ -4,7 +4,7 @@
     "host": "localhost"
   },
   "audio": {
-    "libraryPath": "/Users/mbrodheim/Music",
+    "libraryPath": "/musicsource",
     "supportedFormats": ["mp3", "flac", "m4a", "wav"],
     "organizationStructure": "artist/album",
     "fadeIn": 0.25,
