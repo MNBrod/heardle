@@ -1,0 +1,25 @@
+{
+  "server": {
+    "port": 3000,
+    "host": "localhost"
+  },
+  "audio": {
+    "libraryPath": "/Users/mbrodheim/Music",
+    "supportedFormats": ["mp3", "flac", "m4a", "wav"],
+    "organizationStructure": "artist/album",
+    "fadeIn": 0.25,
+    "fadeOut": 0.25
+  },
+  "game": {
+    "snippetDurations": [1, 2, 4, 7, 11, 16],
+    "maxAttempts": 6,
+    "dailyPuzzle": true,
+    "allowSkips": true
+  },
+  "filters": {
+    "enableArtistFilter": true,
+    "enableAlbumFilter": true,
+    "enableGenreFilter": true,
+    "enableDecadeFilter": true
+  }
+}
