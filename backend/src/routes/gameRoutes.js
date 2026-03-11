@@ -5,7 +5,9 @@ const libraryService = require("../services/libraryService");
 const router = express.Router();
 
 router.get("/daily", (req, res) => {
-  const session = gameService.getDailyGame();
+  const dateStr = req.query.date;
+  const date = dateStr ? new Date(`${dateStr}T00:00:00`) : new Date();
+  const session = gameService.getDailyGame(date);
   if (!session) return res.status(404).json({ error: "No songs available" });
   res.json(session);
 });

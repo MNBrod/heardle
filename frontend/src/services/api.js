@@ -16,7 +16,8 @@ async function request(path, options = {}) {
 }
 
 export function fetchDailyGame() {
-  return request("/game/daily");
+  const today = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD in local time
+  return request(`/game/daily?date=${today}`);
 }
 
 export function fetchPracticeGame() {
