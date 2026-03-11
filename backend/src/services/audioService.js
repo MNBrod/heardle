@@ -4,35 +4,14 @@ const { PassThrough } = require("stream");
 const ffmpeg = require("fluent-ffmpeg");
 const { getConfig } = require("../config/config");
 
-function getRangeStream(filePath, range) {
-  const stat = fs.statSync(filePath);
-  const total = stat.size;
-  if (!range) {
-    return {
-      status: 200,
-      headers: {
-        "Content-Length": total,
-        "Content-Type": "audio/mpeg",
-      },
-      stream: fs.createReadStream(filePath),
-    };
-  }
-
-  const [startStr, endStr] = range.replace(/bytes=/, "").split("-");
-  const start = parseInt(startStr, 10);
-  const end = endStr ? parseInt(endStr, 10) : total - 1;
-  const chunkSize = end - start + 1;
-
-  return {
-    status: 206,
-    headers: {
-      "Content-Range": `bytes ${start}-${end}/${total}`,
-      "Accept-Ranges": "bytes",
-      "Content-Length": chunkSize,
-      "Content-Type": "audio/mpeg",
-    },
-    stream: fs.createReadStream(filePath, { start, end }),
-  };
+function getFullStream(filePath) {
+  const output = new PassThrough();
+  ffmpeg(filePath)
+    .noVideo()
+    .format("mp3")
+    .on("error", (error) => output.emit("error", error))
+    .pipe(output, { end: true });
+  return output;
 }
 
 function getM4aStartOffset(filePath) {
@@ -95,7 +74,7 @@ function getFileExtension(filePath) {
 }
 
 module.exports = {
-  getRangeStream,
+  getFullStream,
   getSnippetStream,
   getFileExtension,
 };

@@ -67,8 +67,11 @@ function submitGuess(sessionId, guess, guessSongId) {
   if (!session || session.completed) return session;
 
   const song = libraryService.getSongById(session.songId);
+  const guessedSong = guessSongId ? libraryService.getSongById(guessSongId) : null;
   const correct =
-    (guessSongId && guessSongId === session.songId) ||
+    (guessedSong &&
+      normalizedGuess(guessedSong.title) === normalizedGuess(song.title) &&
+      normalizedGuess(guessedSong.artist) === normalizedGuess(song.artist)) ||
     normalizedGuess(guess) === normalizedGuess(`${song.artist} - ${song.title}`) ||
     normalizedGuess(guess) === normalizedGuess(song.title);
 

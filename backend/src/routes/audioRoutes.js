@@ -43,12 +43,15 @@ router.get("/:songId/full", (req, res, next) => {
   if (!song) return res.status(404).json({ error: "Song not found" });
 
   try {
-    const range = req.headers.range;
-    const { status, headers, stream } = audioService.getRangeStream(
-      song.filePath,
-      range
-    );
-    res.writeHead(status, headers);
+    const stream = audioService.getFullStream(song.filePath);
+    res.setHeader("Content-Type", "audio/mpeg");
+    stream.on("error", (err) => {
+      if (!res.headersSent) {
+        next(err);
+      } else {
+        res.destroy(err);
+      }
+    });
     stream.pipe(res);
   } catch (error) {
     next(error);

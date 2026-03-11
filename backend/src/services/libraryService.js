@@ -106,12 +106,19 @@ function getSongs(filters = {}) {
 function searchSongs(query) {
   const q = normalize(query).toLowerCase();
   if (!q) return [];
-  return songs.filter((song) => {
+  const matches = songs.filter((song) => {
     return (
       song.title.toLowerCase().includes(q) ||
       song.artist.toLowerCase().includes(q) ||
       song.album.toLowerCase().includes(q)
     );
+  });
+  const seen = new Set();
+  return matches.filter((song) => {
+    const key = `${normalize(song.artist).toLowerCase()}|${normalize(song.title).toLowerCase()}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
   });
 }
 

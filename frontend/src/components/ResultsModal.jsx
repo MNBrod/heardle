@@ -8,11 +8,29 @@ export default function ResultsModal({ session, song, onPlayAgain }) {
       <h2 className="text-xl font-semibold">
         {session.won ? "You got it!" : "Nice try"}
       </h2>
+
       {song ? (
-        <p className="mt-2 text-sm text-slate-300">
-          Answer: <span className="font-medium">{song.title}</span> — {song.artist}
-        </p>
+        <div className="mt-4 flex gap-4">
+          <img
+            src={`/api/library/art/${song.id}`}
+            alt={`${song.album} cover`}
+            className="h-24 w-24 rounded-lg object-cover"
+            onError={(e) => { e.target.style.display = "none"; }}
+          />
+          <div className="flex flex-col justify-center">
+            <p className="font-semibold text-white">{song.title}</p>
+            <p className="text-sm text-slate-300">{song.artist}</p>
+            <p className="text-sm text-slate-400">{song.album}{song.year ? ` · ${song.year}` : ""}</p>
+          </div>
+        </div>
       ) : null}
+
+      {song ? (
+        <audio controls className="mt-4 w-full">
+          <source src={`/api/audio/${song.id}/full`} type="audio/mpeg" />
+        </audio>
+      ) : null}
+
       <div className="mt-4 flex gap-3">
         <button
           onClick={onPlayAgain}
