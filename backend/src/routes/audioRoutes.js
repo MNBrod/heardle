@@ -19,6 +19,13 @@ router.get("/:sessionId/snippet/:index", (req, res, next) => {
       Number(index)
     );
     res.setHeader("Content-Type", contentType);
+    stream.on("error", (err) => {
+      if (!res.headersSent) {
+        next(err);
+      } else {
+        res.destroy(err);
+      }
+    });
     stream.pipe(res);
   } catch (error) {
     next(error);
