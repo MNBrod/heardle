@@ -41,6 +41,18 @@ router.get("/:sessionId/reveal", (req, res) => {
   res.json({ session, song });
 });
 
+router.get("/:sessionId/hint", (req, res) => {
+  const { sessionId } = req.params;
+  const session = gameService.getSession(sessionId);
+  if (!session) return res.status(404).json({ error: "Session not found" });
+  if (session.attempts < session.hintAfterAttempts) {
+    return res.status(403).json({ error: "Hint not yet available" });
+  }
+  const song = libraryService.getSongById(session.songId);
+  if (!song) return res.status(404).json({ error: "Song not found" });
+  res.json({ year: song.year ?? null });
+});
+
 router.get("/:sessionId/state", (req, res) => {
   const { sessionId } = req.params;
   const session = gameService.getSession(sessionId);

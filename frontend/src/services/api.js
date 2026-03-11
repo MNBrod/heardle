@@ -59,3 +59,7 @@ export function searchSongs(query) {
 export function fetchSongs() {
   return request("/library/songs");
 }
+
+export function fetchHint(sessionId) {
+  return request(`/game/${sessionId}/hint`);
+}

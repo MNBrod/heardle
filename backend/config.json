@@ -14,7 +14,8 @@
     "snippetDurations": [1, 2, 4, 7, 11, 16],
     "maxAttempts": 6,
     "dailyPuzzle": true,
-    "allowSkips": true
+    "allowSkips": true,
+    "hintAfterAttempts": 3
   },
   "filters": {
     "enableArtistFilter": true,

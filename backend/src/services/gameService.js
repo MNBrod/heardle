@@ -26,6 +26,7 @@ function createSession(song) {
     songId: song.id,
     attempts: 0,
     maxAttempts: config.game.maxAttempts,
+    hintAfterAttempts: config.game.hintAfterAttempts ?? 3,
     guesses: [],
     currentSnippetIndex: 0,
     startTime: new Date().toISOString(),
