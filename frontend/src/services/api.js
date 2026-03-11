@@ -9,8 +9,15 @@ async function request(path, options = {}) {
   });
 
   if (!response.ok) {
-    const message = await response.text();
-    throw new Error(message || "Request failed");
+    let message = "Request failed";
+    try {
+      const data = await response.json();
+      message = data.error || message;
+    } catch {
+      const text = await response.text();
+      if (text) message = text;
+    }
+    throw new Error(message);
   }
   return response.json();
 }

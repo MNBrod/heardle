@@ -8,13 +8,13 @@ router.get("/daily", (req, res) => {
   const dateStr = req.query.date;
   const date = dateStr ? new Date(`${dateStr}T00:00:00`) : new Date();
   const session = gameService.getDailyGame(date);
-  if (!session) return res.status(404).json({ error: "No songs available" });
+  if (!session) return res.status(404).json({ error: "Music library is empty or failed to load. Check that your library path is correct and contains supported audio files." });
   res.json(session);
 });
 
 router.get("/practice", (req, res) => {
   const session = gameService.createPracticeGame();
-  if (!session) return res.status(404).json({ error: "No songs available" });
+  if (!session) return res.status(404).json({ error: "Music library is empty or failed to load. Check that your library path is correct and contains supported audio files." });
   res.json(session);
 });
 

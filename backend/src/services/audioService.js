@@ -35,12 +35,36 @@ function getRangeStream(filePath, range) {
   };
 }
 
-function getSnippetStream(filePath, index) {
+function getM4aStartOffset(filePath) {
+  return new Promise((resolve) => {
+    ffmpeg.ffprobe(filePath, (err, metadata) => {
+      if (err) return resolve(0);
+      const tags = metadata?.format?.tags ?? {};
+      const itunSmpb = tags["iTunSMPB"] ?? tags["itunsmpb"];
+      if (!itunSmpb) return resolve(0);
+      // Format: "00000000 <pre-gap-hex> <post-gap-hex> <total-hex> ..."
+      const parts = itunSmpb.trim().split(/\s+/);
+      if (parts.length < 2) return resolve(0);
+      const preGapSamples = parseInt(parts[1], 16);
+      const audioStream = metadata?.streams?.find((s) => s.codec_type === "audio");
+      const sampleRate = audioStream?.sample_rate ?? 44100;
+      resolve(preGapSamples / sampleRate);
+    });
+  });
+}
+
+async function getSnippetStream(filePath, index) {
   const config = getConfig();
   const durations = config.game.snippetDurations || [1];
   const duration = durations[Math.min(index, durations.length - 1)];
   const fadeIn = config.audio.fadeIn || 0;
   const fadeOut = config.audio.fadeOut || 0;
+
+  const ext = path.extname(filePath).replace(".", "").toLowerCase();
+  const startTime = ext === "m4a" ? await getM4aStartOffset(filePath) : 0;
+  if (startTime > 0) {
+    console.log(`[audioService] m4a start offset for ${path.basename(filePath)}: ${startTime.toFixed(4)}s`);
+  }
 
   const output = new PassThrough();
   const filters = [];
@@ -52,8 +76,9 @@ function getSnippetStream(filePath, index) {
   }
 
   ffmpeg(filePath)
-    .setStartTime(0)
+    .setStartTime(startTime)
     .duration(duration)
+    .noVideo()
     .audioFilters(filters)
     .format("mp3")
     .on("error", (error) => output.emit("error", error))

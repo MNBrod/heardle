@@ -31,7 +31,22 @@ app.get("/heardle/*", (_req, res) => {
 
 app.use(errorHandler);
 
+function checkFfmpeg() {
+  return new Promise((resolve) => {
+    const { exec } = require("child_process");
+    exec("ffmpeg -version", (err) => {
+      if (err) {
+        console.error("ffmpeg not found. Audio snippet generation will fail. Install ffmpeg and ensure it is in PATH.");
+      } else {
+        console.log("ffmpeg OK");
+      }
+      resolve();
+    });
+  });
+}
+
 async function start() {
+  await checkFfmpeg();
   await libraryService.loadLibrary();
   watchConfig();
 
