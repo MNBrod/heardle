@@ -1,5 +1,6 @@
 import React from "react";
 import AudioPlayer from "./AudioPlayer";
+import GuessGrid from "./GuessGrid";
 import SearchInput from "./SearchInput";
 
 export default function GameBoard({ session, onGuess, onSkip }) {
@@ -25,6 +26,8 @@ export default function GameBoard({ session, onGuess, onSkip }) {
       </div>
 
       <AudioPlayer src={snippetUrl} />
+
+      <GuessGrid session={session} />
 
       <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4">
         <p className="mb-2 text-sm text-slate-400">Make a guess</p>

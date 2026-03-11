@@ -75,8 +75,20 @@ function submitGuess(sessionId, guess, guessSongId) {
     normalizedGuess(guess) === normalizedGuess(`${song.artist} - ${song.title}`) ||
     normalizedGuess(guess) === normalizedGuess(song.title);
 
+  const albumMatch =
+    !correct &&
+    guessedSong &&
+    normalizedGuess(guessedSong.album) === normalizedGuess(song.album);
+
+  const displayText = guessedSong
+    ? `${guessedSong.artist} – ${guessedSong.title}`
+    : guess || "";
+
   session.attempts += 1;
-  session.guesses.push(guess || guessSongId || "");
+  session.guesses.push({
+    text: displayText,
+    result: correct ? "correct" : albumMatch ? "album" : "wrong",
+  });
   session.currentSnippetIndex = Math.min(
     session.attempts,
     session.maxAttempts - 1
@@ -99,6 +111,7 @@ function skip(sessionId) {
   if (!config.game.allowSkips) return session;
 
   session.attempts += 1;
+  session.guesses.push({ text: "Skipped", result: "wrong" });
   session.currentSnippetIndex = Math.min(
     session.attempts,
     session.maxAttempts - 1
