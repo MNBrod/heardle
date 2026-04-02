@@ -1,5 +1,6 @@
 const { v4: uuid } = require("uuid");
 const { format } = require("date-fns");
+const { createHash } = require("crypto");
 const { getConfig } = require("../config/config");
 const libraryService = require("./libraryService");
 
@@ -11,11 +12,8 @@ function normalizedGuess(guess) {
 
 function selectDailySong(date, songs) {
   const dateStr = format(date, "yyyy-MM-dd");
-  let hash = 0;
-  for (let i = 0; i < dateStr.length; i += 1) {
-    hash = (hash * 31 + dateStr.charCodeAt(i)) % 1000000007;
-  }
-  const index = songs.length ? hash % songs.length : 0;
+  const hashHex = createHash("sha1").update(dateStr).digest("hex");
+  const index = songs.length ? parseInt(hashHex.slice(0, 8), 16) % songs.length : 0;
   return songs[index] || null;
 }
 
