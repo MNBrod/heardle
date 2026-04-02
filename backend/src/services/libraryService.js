@@ -83,8 +83,11 @@ async function loadLibrary() {
     loadedSongs.push(song);
   }
 
-  songs = loadedSongs;
-  songMap = new Map(loadedSongs.map((song) => [song.id, song]));
+  const excludePatterns = config.library?.excludeTitleContaining ?? [];
+  songs = loadedSongs.filter((song) =>
+    excludePatterns.every((pattern) => !song.title.toLowerCase().includes(pattern.toLowerCase()))
+  );
+  songMap = new Map(songs.map((song) => [song.id, song]));
   return songs;
 }
 
