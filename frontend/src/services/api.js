@@ -63,3 +63,14 @@ export function fetchSongs() {
 export function fetchHint(sessionId) {
   return request(`/game/${sessionId}/hint`);
 }
+
+export function fetchExclusions() {
+  return request("/admin/exclusions");
+}
+
+export function saveExclusions(patterns) {
+  return request("/admin/exclusions", {
+    method: "PUT",
+    body: JSON.stringify({ patterns }),
+  });
+}

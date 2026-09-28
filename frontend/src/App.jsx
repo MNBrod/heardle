@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import GameBoard from "./components/GameBoard";
 import ResultsModal from "./components/ResultsModal";
 import Statistics from "./components/Statistics";
+import ExclusionsModal from "./components/ExclusionsModal";
 import { useGame } from "./hooks/useGame";
 
 export default function App() {
   const [mode, setMode] = useState("daily");
+  const [showExclusions, setShowExclusions] = useState(false);
   const {
     session,
     song,
@@ -41,7 +43,17 @@ export default function App() {
           >
             Practice
           </button>
+          <button
+            onClick={() => setShowExclusions(true)}
+            className="ml-auto rounded-lg bg-slate-900 px-3 py-2 text-sm hover:bg-slate-800"
+          >
+            Exclusions
+          </button>
         </div>
+
+        {showExclusions ? (
+          <ExclusionsModal onClose={() => setShowExclusions(false)} />
+        ) : null}
 
         {loading ? <p>Loading game...</p> : null}
         {error ? <p className="text-red-400">{error}</p> : null}

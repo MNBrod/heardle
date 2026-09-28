@@ -2,8 +2,9 @@ const fs = require("fs");
 const path = require("path");
 const { parseFile } = require("music-metadata");
 const { createHash } = require("crypto");
-const { getConfig } = require("../config/config");
+const { getConfig, configEvents } = require("../config/config");
 
+let allSongs = [];
 let songs = [];
 let songMap = new Map();
 
@@ -48,6 +49,7 @@ async function loadLibrary() {
   const libraryPath = config.audio.libraryPath;
   if (!libraryPath || !fs.existsSync(libraryPath)) {
     console.warn("Library path does not exist:", libraryPath);
+    allSongs = [];
     songs = [];
     songMap = new Map();
     return songs;
@@ -83,13 +85,35 @@ async function loadLibrary() {
     loadedSongs.push(song);
   }
 
-  const excludePatterns = config.library?.excludeTitleContaining ?? [];
-  songs = loadedSongs.filter((song) =>
-    excludePatterns.every((pattern) => !song.title.toLowerCase().includes(pattern.toLowerCase()))
-  );
-  songMap = new Map(songs.map((song) => [song.id, song]));
+  allSongs = loadedSongs;
+  // Excluded songs stay in the map so games already in progress can still play them.
+  songMap = new Map(allSongs.map((song) => [song.id, song]));
+  applyExclusions();
   return songs;
 }
+
+function getExclusionPatterns() {
+  return getConfig().library?.excludeTitleContaining ?? [];
+}
+
+function titleMatches(song, pattern) {
+  return song.title.toLowerCase().includes(pattern.toLowerCase());
+}
+
+function applyExclusions() {
+  const excludePatterns = getExclusionPatterns();
+  songs = allSongs.filter((song) =>
+    excludePatterns.every((pattern) => !titleMatches(song, pattern))
+  );
+}
+
+function getExclusionCounts(patterns = getExclusionPatterns()) {
+  return Object.fromEntries(
+    patterns.map((pattern) => [pattern, allSongs.filter((song) => titleMatches(song, pattern)).length])
+  );
+}
+
+configEvents.on("change", applyExclusions);
 
 function getSongs(filters = {}) {
   return songs.filter((song) => {
@@ -139,6 +163,9 @@ function getAlbums() {
 
 module.exports = {
   loadLibrary,
+  applyExclusions,
+  getExclusionPatterns,
+  getExclusionCounts,
   getSongs,
   searchSongs,
   getSongById,

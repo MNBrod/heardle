@@ -7,6 +7,7 @@ const libraryService = require("./services/libraryService");
 const gameRoutes = require("./routes/gameRoutes");
 const audioRoutes = require("./routes/audioRoutes");
 const libraryRoutes = require("./routes/libraryRoutes");
+const adminRoutes = require("./routes/adminRoutes");
 const errorHandler = require("./middleware/errorHandler");
 
 const app = express();
@@ -22,6 +23,7 @@ app.get("/api/health", (req, res) => {
 app.use("/api/game", gameRoutes);
 app.use("/api/audio", audioRoutes);
 app.use("/api/library", libraryRoutes);
+app.use("/api/admin", adminRoutes);
 
 const staticPath = path.join(__dirname, "..", "..", "frontend", "dist");
 app.use("/heardle", express.static(staticPath));
