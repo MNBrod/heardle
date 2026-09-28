@@ -22,5 +22,8 @@
     "enableAlbumFilter": true,
     "enableGenreFilter": true,
     "enableDecadeFilter": true
+  },
+  "library": {
+    "excludeTitleContaining": ["[mono]"]
   }
 }
