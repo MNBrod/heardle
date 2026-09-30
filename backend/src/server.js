@@ -2,7 +2,7 @@ require("dotenv").config();
 const path = require("path");
 const express = require("express");
 const cors = require("cors");
-const { getConfig, getBackgroundColor, watchConfig } = require("./config/config");
+const { getConfig, getUiSettings, watchConfig } = require("./config/config");
 const libraryService = require("./services/libraryService");
 const gameRoutes = require("./routes/gameRoutes");
 const audioRoutes = require("./routes/audioRoutes");
@@ -21,7 +21,7 @@ app.get("/api/health", (req, res) => {
 });
 
 app.get("/api/ui", (req, res) => {
-  res.json({ backgroundColor: getBackgroundColor() });
+  res.json(getUiSettings());
 });
 
 app.use("/api/game", gameRoutes);

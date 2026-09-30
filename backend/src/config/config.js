@@ -31,6 +31,8 @@ const defaultConfig = {
   },
   ui: {
     backgroundColor: "slate",
+    title: "Heardle Clone",
+    subtitle: "Guess the song from short audio snippets.",
   },
 };
 
@@ -93,8 +95,14 @@ function validateConfig(config) {
   return errors;
 }
 
-function getBackgroundColor() {
-  return BACKGROUND_COLORS[currentConfig.ui?.backgroundColor] || BACKGROUND_COLORS.slate;
+// The resolved values the frontend renders, with the color as a hex code.
+function getUiSettings() {
+  const ui = currentConfig.ui ?? {};
+  return {
+    backgroundColor: BACKGROUND_COLORS[ui.backgroundColor] || BACKGROUND_COLORS.slate,
+    title: typeof ui.title === "string" ? ui.title : defaultConfig.ui.title,
+    subtitle: typeof ui.subtitle === "string" ? ui.subtitle : defaultConfig.ui.subtitle,
+  };
 }
 
 let currentConfig = deepMerge(defaultConfig, readConfigFile());
@@ -134,7 +142,8 @@ function updateConfig(partial) {
 
 module.exports = {
   getConfig,
-  getBackgroundColor,
+  getUiSettings,
+  BACKGROUND_COLORS,
   updateConfig,
   watchConfig,
   configEvents,

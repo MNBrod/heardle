@@ -6,17 +6,26 @@ import ExclusionsModal from "./components/ExclusionsModal";
 import { useGame } from "./hooks/useGame";
 import { fetchUiSettings } from "./services/api";
 
+const FALLBACK_HEADER = {
+  title: "Heardle Clone",
+  subtitle: "Guess the song from short audio snippets.",
+};
+
 export default function App() {
   const [mode, setMode] = useState("daily");
   const [showExclusions, setShowExclusions] = useState(false);
+  // Null until loaded, so the default title doesn't flash before a custom one.
+  const [header, setHeader] = useState(null);
 
   useEffect(() => {
     // Keeps the default bg-slate-950 on <body> if the request fails.
     fetchUiSettings()
-      .then(({ backgroundColor }) => {
+      .then(({ backgroundColor, title, subtitle }) => {
         document.body.style.backgroundColor = backgroundColor;
+        document.title = title;
+        setHeader({ title, subtitle });
       })
-      .catch(() => {});
+      .catch(() => setHeader(FALLBACK_HEADER));
   }, []);
   const {
     session,
@@ -31,9 +40,13 @@ export default function App() {
   return (
     <div className="min-h-screen text-slate-100">
       <div className="mx-auto max-w-3xl px-4 py-10">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold">Heardle Clone</h1>
-          <p className="text-slate-400">Guess the song from short audio snippets.</p>
+        <header className="mb-8 min-h-[3.75rem]">
+          {header ? (
+            <>
+              <h1 className="text-3xl font-bold">{header.title}</h1>
+              {header.subtitle ? <p className="text-slate-400">{header.subtitle}</p> : null}
+            </>
+          ) : null}
         </header>
 
         <div className="mb-6 flex gap-2">

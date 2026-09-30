@@ -27,6 +27,8 @@
     "excludeTitleContaining": ["[mono]"]
   },
   "ui": {
-    "backgroundColor": "slate"
+    "backgroundColor": "slate",
+    "title": "Heardle Clone",
+    "subtitle": "Guess the song from short audio snippets."
   }
 }
