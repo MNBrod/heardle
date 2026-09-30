@@ -1,7 +1,9 @@
 const fs = require("fs");
 const path = require("path");
 
-// Kept out of config.json so stats can live on their own Docker volume.
+// In Docker this lives in the container's own filesystem (no volume), so stats
+// survive restarts but not recreating the container. Carry them across
+// deployments with the export/import admin routes.
 const statsPath = path.join(__dirname, "..", "..", "data", "stats.json");
 
 const GUESS_KEYS = ["1", "2", "3", "4", "5", "6", "fail"];
