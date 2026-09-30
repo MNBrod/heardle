@@ -15,6 +15,9 @@ fetch() {
   local path=$1 out=$2 status
   status=$(curl -sS -o "$out" -w '%{http_code}' "http://$ADDRESS$path") ||
     die "could not reach http://$ADDRESS$path"
+  if [[ $status == 404 ]]; then
+    die "http://$ADDRESS has no $path route. It's probably running an older Heardle image, which kept stats in each player's browser instead of on the server, so there's nothing to export. Rebuild the image from the latest main and redeploy it."
+  fi
   if [[ $status != 2* ]]; then
     die "GET $path failed (HTTP $status): $(cat "$out")"
   fi

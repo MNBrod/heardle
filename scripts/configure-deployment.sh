@@ -63,6 +63,11 @@ done
 
 echo "Checking the server..."
 api GET /api/health >/dev/null
+# Older images answer /api/health but lack the admin routes this script uses.
+admin_status=$(curl -sS -o /dev/null -w '%{http_code}' "http://$ADDRESS/api/admin/ui") ||
+  die "could not reach http://$ADDRESS/api/admin/ui"
+[[ $admin_status == 404 ]] &&
+  die "http://$ADDRESS is running an older Heardle image without the settings and stats routes. Rebuild the image from the latest main and redeploy it, then run this again."
 echo "  Server is up."
 
 # --- Color -----------------------------------------------------------------
