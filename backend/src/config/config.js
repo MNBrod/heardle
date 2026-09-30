@@ -29,6 +29,18 @@ const defaultConfig = {
     enableGenreFilter: true,
     enableDecadeFilter: true,
   },
+  ui: {
+    backgroundColor: "slate",
+  },
+};
+
+// Allowed values for ui.backgroundColor. All are dark so the light text stays readable.
+const BACKGROUND_COLORS = {
+  slate: "#020617",
+  navy: "#0b1733",
+  forest: "#0a1f16",
+  plum: "#1e0b24",
+  burgundy: "#260a10",
 };
 
 const configDir = path.join(__dirname, "..", "..");
@@ -73,7 +85,16 @@ function validateConfig(config) {
   if (!config.game || !Array.isArray(config.game.snippetDurations)) {
     errors.push("game.snippetDurations must be an array");
   }
+  if (!BACKGROUND_COLORS[config.ui?.backgroundColor]) {
+    errors.push(
+      `ui.backgroundColor must be one of: ${Object.keys(BACKGROUND_COLORS).join(", ")} (falling back to slate)`
+    );
+  }
   return errors;
+}
+
+function getBackgroundColor() {
+  return BACKGROUND_COLORS[currentConfig.ui?.backgroundColor] || BACKGROUND_COLORS.slate;
 }
 
 let currentConfig = deepMerge(defaultConfig, readConfigFile());
@@ -113,6 +134,7 @@ function updateConfig(partial) {
 
 module.exports = {
   getConfig,
+  getBackgroundColor,
   updateConfig,
   watchConfig,
   configEvents,

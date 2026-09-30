@@ -25,5 +25,8 @@
   },
   "library": {
     "excludeTitleContaining": ["[mono]"]
+  },
+  "ui": {
+    "backgroundColor": "slate"
   }
 }

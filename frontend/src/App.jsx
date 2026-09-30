@@ -1,13 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import GameBoard from "./components/GameBoard";
 import ResultsModal from "./components/ResultsModal";
 import Statistics from "./components/Statistics";
 import ExclusionsModal from "./components/ExclusionsModal";
 import { useGame } from "./hooks/useGame";
+import { fetchUiSettings } from "./services/api";
 
 export default function App() {
   const [mode, setMode] = useState("daily");
   const [showExclusions, setShowExclusions] = useState(false);
+
+  useEffect(() => {
+    // Keeps the default bg-slate-950 on <body> if the request fails.
+    fetchUiSettings()
+      .then(({ backgroundColor }) => {
+        document.body.style.backgroundColor = backgroundColor;
+      })
+      .catch(() => {});
+  }, []);
   const {
     session,
     song,
@@ -19,7 +29,7 @@ export default function App() {
   } = useGame(mode);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
+    <div className="min-h-screen text-slate-100">
       <div className="mx-auto max-w-3xl px-4 py-10">
         <header className="mb-8">
           <h1 className="text-3xl font-bold">Heardle Clone</h1>

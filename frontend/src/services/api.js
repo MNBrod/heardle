@@ -64,6 +64,10 @@ export function fetchHint(sessionId) {
   return request(`/game/${sessionId}/hint`);
 }
 
+export function fetchUiSettings() {
+  return request("/ui");
+}
+
 export function fetchExclusions() {
   return request("/admin/exclusions");
 }
