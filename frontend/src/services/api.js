@@ -68,6 +68,14 @@ export function fetchUiSettings() {
   return request("/ui");
 }
 
+export function fetchStats() {
+  return request("/stats");
+}
+
+export function resetStats() {
+  return request("/admin/stats", { method: "DELETE" });
+}
+
 export function fetchExclusions() {
   return request("/admin/exclusions");
 }

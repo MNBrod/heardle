@@ -1,6 +1,7 @@
 const express = require("express");
 const { getConfig, updateConfig, BACKGROUND_COLORS } = require("../config/config");
 const libraryService = require("../services/libraryService");
+const statsService = require("../services/statsService");
 
 const router = express.Router();
 
@@ -92,6 +93,35 @@ router.patch("/ui", (req, res) => {
 
   updateConfig({ ui: update });
   res.json(uiResponse());
+});
+
+const STATS_EXPORT_VERSION = 1;
+
+router.get("/stats/export", (req, res) => {
+  res.setHeader("Content-Disposition", 'attachment; filename="heardle-stats.json"');
+  res.json({
+    version: STATS_EXPORT_VERSION,
+    exportedAt: new Date().toISOString(),
+    stats: statsService.getStats(),
+  });
+});
+
+// Replaces the current stats. Accepts the export format, or a bare stats object
+// (e.g. the "heardle-stats" value from an old browser's localStorage).
+router.post("/stats/import", (req, res) => {
+  const body = req.body || {};
+  const isExport = body.stats !== undefined;
+  if (isExport && body.version !== STATS_EXPORT_VERSION) {
+    return res.status(400).json({ error: `Unsupported export version: ${body.version}` });
+  }
+  const candidate = isExport ? body.stats : body;
+  const error = statsService.validateStats(candidate);
+  if (error) return res.status(400).json({ error });
+  res.json(statsService.replaceStats(candidate));
+});
+
+router.delete("/stats", (req, res) => {
+  res.json(statsService.resetStats());
 });
 
 module.exports = router;

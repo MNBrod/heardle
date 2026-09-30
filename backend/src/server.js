@@ -3,6 +3,7 @@ const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const { getConfig, getUiSettings, watchConfig } = require("./config/config");
+const statsService = require("./services/statsService");
 const libraryService = require("./services/libraryService");
 const gameRoutes = require("./routes/gameRoutes");
 const audioRoutes = require("./routes/audioRoutes");
@@ -22,6 +23,10 @@ app.get("/api/health", (req, res) => {
 
 app.get("/api/ui", (req, res) => {
   res.json(getUiSettings());
+});
+
+app.get("/api/stats", (req, res) => {
+  res.json(statsService.getStats());
 });
 
 app.use("/api/game", gameRoutes);

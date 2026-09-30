@@ -94,7 +94,7 @@ export default function App() {
         </div>
 
         <div className="mt-8">
-          <Statistics />
+          <Statistics session={session} />
         </div>
       </div>
     </div>

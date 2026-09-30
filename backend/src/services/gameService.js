@@ -3,6 +3,7 @@ const { format } = require("date-fns");
 const { createHash } = require("crypto");
 const { getConfig } = require("../config/config");
 const libraryService = require("./libraryService");
+const statsService = require("./statsService");
 
 const sessions = new Map();
 
@@ -57,6 +58,13 @@ function createPracticeGame() {
   return session;
 }
 
+// Every path that ends a game goes through here so each game is counted exactly once.
+function complete(session, won) {
+  session.completed = true;
+  session.won = won;
+  statsService.recordResult(session);
+}
+
 function getSession(sessionId) {
   return sessions.get(sessionId);
 }
@@ -94,10 +102,9 @@ function submitGuess(sessionId, guess, guessSongId) {
   );
 
   if (correct) {
-    session.completed = true;
-    session.won = true;
+    complete(session, true);
   } else if (session.attempts >= session.maxAttempts) {
-    session.completed = true;
+    complete(session, false);
   }
 
   return session;
@@ -116,7 +123,7 @@ function skip(sessionId) {
     session.maxAttempts - 1
   );
   if (session.attempts >= session.maxAttempts) {
-    session.completed = true;
+    complete(session, false);
   }
   return session;
 }
@@ -124,8 +131,9 @@ function skip(sessionId) {
 function reveal(sessionId) {
   const session = sessions.get(sessionId);
   if (!session) return null;
-  session.completed = true;
-  session.won = false;
+  // The frontend also calls reveal after a finished game to fetch the answer,
+  // so only a game still in progress counts as given up.
+  if (!session.completed) complete(session, false);
   return session;
 }
 
